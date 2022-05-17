@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -14,12 +15,13 @@ func (db CurrencyRepositoryDB) Get(currencyId string, from string, to string) ([
 
 	sqlresult := []Currency{}
 
-	query := `SELECT currency_id, updated_at, value 
-		FROM currency`
+	currencyId = strings.ToUpper(currencyId)
+
+	query := `SELECT currency_id, updated_at, value FROM currency`
 
 	filterCurrencyId := fmt.Sprintf("WHERE currency_id <> ''")
-	if currencyId != "all" {
-		filterCurrencyId = fmt.Sprintf("WHERE currency_id = %s", currencyId)
+	if currencyId != "ALL" {
+		filterCurrencyId = fmt.Sprintf("WHERE currency_id = '%s'", currencyId)
 	}
 
 	filterUpdatedAt := ""

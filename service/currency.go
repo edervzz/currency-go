@@ -21,3 +21,18 @@ type CurrencyItem struct {
 type CurrencyService interface {
 	Get(req CurrencyRequest) (CurrencyResponse, *utils.AppMess)
 }
+
+////////////////////////////////
+type CurrencyAPIItem struct {
+	Code  string  `json:"code"`
+	Value float32 `json:"value"`
+}
+
+type APILastUpdate struct {
+	LastUpdatedAt string `json:"last_updated_at"`
+}
+
+type CurrencyAPIPayload struct {
+	Meta APILastUpdate              `json:"meta"`
+	Data map[string]CurrencyAPIItem `json:"data"`
+}

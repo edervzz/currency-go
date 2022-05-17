@@ -3,7 +3,6 @@ package app
 import (
 	"currency-go/service"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -26,7 +25,33 @@ func (h CurrencyHandler) Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(appMess.Code)
 		return
 	}
-	fmt.Println(res)
+
+	json.NewEncoder(w).Encode(res)
+}
+
+func (h CurrencyHandler) GetCurrencyAPISimulate(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
+	res := service.CurrencyAPIPayload{
+		Meta: service.APILastUpdate{
+			LastUpdatedAt: "2022-05-15T23:59:59Z",
+		},
+		Data: map[string]service.CurrencyAPIItem{
+			"AED": {
+				Code:  "AED",
+				Value: 3.67311,
+			},
+			"AFN": {
+				Code:  "AFN",
+				Value: 88.00199,
+			},
+			"ALL": {
+				Code:  "ALL",
+				Value: 15.85339,
+			},
+		},
+	}
+
 	json.NewEncoder(w).Encode(res)
 }
 
