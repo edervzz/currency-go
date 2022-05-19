@@ -23,16 +23,16 @@ type CurrencyService interface {
 }
 
 ////////////////////////////////
-type CurrencyAPIItem struct {
+type CurrencyItemAPI struct {
 	Code  string  `json:"code"`
 	Value float32 `json:"value"`
 }
 
-type APILastUpdate struct {
+type LastUpdateAPI struct {
 	LastUpdatedAt string `json:"last_updated_at"`
 }
 
-type CurrencyAPIPayload struct {
-	Meta APILastUpdate              `json:"meta"`
-	Data map[string]CurrencyAPIItem `json:"data"`
+type CurrencyPayloadAPI struct {
+	Meta LastUpdateAPI              `json:"meta"`
+	Data map[string]CurrencyItemAPI `json:"data"`
 }

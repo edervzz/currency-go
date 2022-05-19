@@ -4,6 +4,7 @@ import (
 	"currency-go/service"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -14,15 +15,48 @@ type CurrencyHandler struct {
 
 func (h CurrencyHandler) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
+
+	sdtfrom := r.URL.Query().Get("finit")
+	sdtto := r.URL.Query().Get("fend")
+
+	var dfrom, dto *time.Time
+
+	if sdtfrom != "" {
+		df, err := time.Parse("2006-01-02T15:04:05", sdtfrom)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+		dfrom = &df
+	}
+
+	if sdtto != "" {
+		dt, err := time.Parse("2006-01-02T15:04:05", sdtto)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+		dto = &dt
+	}
+
+	if dfrom != nil && dto != nil && dfrom.After(*dto) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("TO, cannot be before FROM")
+		return
+	}
+
 	req := service.CurrencyRequest{
 		CurrencyId: mux.Vars(r)["id"],
-		From:       r.URL.Query().Get("finit"),
-		To:         r.URL.Query().Get("fend"),
+		From:       sdtfrom,
+		To:         sdtto,
 	}
+
 	res, appMess := h.service.Get(req)
 	if appMess != nil {
-		json.NewEncoder(w).Encode(appMess.Message)
 		w.WriteHeader(appMess.Code)
+		json.NewEncoder(w).Encode(appMess.Message)
 		return
 	}
 
@@ -32,11 +66,11 @@ func (h CurrencyHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h CurrencyHandler) GetCurrencyAPISimulate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
-	res := service.CurrencyAPIPayload{
-		Meta: service.APILastUpdate{
+	res := service.CurrencyPayloadAPI{
+		Meta: service.LastUpdateAPI{
 			LastUpdatedAt: "2022-05-15T23:59:59Z",
 		},
-		Data: map[string]service.CurrencyAPIItem{
+		Data: map[string]service.CurrencyItemAPI{
 			"AED": {
 				Code:  "AED",
 				Value: 3.67311,
@@ -51,7 +85,7 @@ func (h CurrencyHandler) GetCurrencyAPISimulate(w http.ResponseWriter, r *http.R
 			},
 		},
 	}
-
+	time.Sleep(600 * time.Millisecond)
 	json.NewEncoder(w).Encode(res)
 }
 

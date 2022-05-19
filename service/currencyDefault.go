@@ -13,14 +13,9 @@ func (s DefaultCurrencyService) Get(req CurrencyRequest) (CurrencyResponse, *uti
 
 	response := CurrencyResponse{}
 
-	result, err := s.repo.Get(req.CurrencyId, req.From, req.To)
+	result, err := s.repo.GetCurrencies(req.CurrencyId, req.From, req.To)
 	if err != nil {
 		appMess := utils.NewNotFound(err.Error())
-		return CurrencyResponse{}, appMess
-	}
-
-	if len(result) == 0 {
-		appMess := utils.NewNotFound("no items")
 		return CurrencyResponse{}, appMess
 	}
 

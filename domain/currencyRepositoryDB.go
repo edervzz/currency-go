@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -11,7 +12,7 @@ type CurrencyRepositoryDB struct {
 	client *sqlx.DB
 }
 
-func (db CurrencyRepositoryDB) Get(currencyId string, from string, to string) ([]Currency, error) {
+func (db CurrencyRepositoryDB) GetCurrencies(currencyId string, from string, to string) ([]Currency, error) {
 
 	sqlresult := []Currency{}
 
@@ -34,7 +35,6 @@ func (db CurrencyRepositoryDB) Get(currencyId string, from string, to string) ([
 	}
 
 	query = fmt.Sprintf("%s %s %s", query, filterCurrencyId, filterUpdatedAt)
-	fmt.Println("query:", query)
 
 	sqlRows, err := db.client.Query(query)
 	if err != nil {
@@ -50,7 +50,34 @@ func (db CurrencyRepositoryDB) Get(currencyId string, from string, to string) ([
 			return []Currency{}, err
 		}
 	}
+
+	if len(sqlresult) == 0 {
+		return sqlresult, errors.New("no items")
+	}
+
 	return sqlresult, nil
+}
+
+func (db CurrencyRepositoryDB) InsertCurrencies(c Currencies, lastUpdatedAt string) error {
+	var atLeastOneError error
+	for _, v := range c.Items {
+		_, err := db.client.Exec(`INSERT INTO public.currency(currency_id, updated_at, value) VALUES ($1, $2, $3);`,
+			v.CurrencyId, lastUpdatedAt, v.Value)
+		if err != nil && atLeastOneError == nil {
+			atLeastOneError = err
+		}
+	}
+	return atLeastOneError
+}
+
+func (db CurrencyRepositoryDB) InsertLog(startTime string, timeLapse string) error {
+	_, err := db.client.Exec(`INSERT INTO public.logger(start_datetime, time_lapse) VALUES ($1, $2);`,
+		startTime, timeLapse)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	return nil
 }
 
 func NewCurrencyRepositoryDB(client *sqlx.DB) CurrencyRepositoryDB {

@@ -6,6 +6,12 @@ type Currency struct {
 	Value      float32
 }
 
+type Currencies struct {
+	Items []Currency
+}
+
 type CurrencyRepository interface {
-	Get(currencyId string, from string, to string) ([]Currency, error)
+	GetCurrencies(currencyId string, from string, to string) ([]Currency, error)
+	InsertCurrencies(c Currencies, lastUpdatedAt string) error
+	InsertLog(startTime string, timeLapse string) error
 }

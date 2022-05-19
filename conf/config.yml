@@ -1,0 +1,11 @@
+
+dbhost: "localhost"
+dbport: 5432
+dbuser: "postgres"
+dbpassword: "mysecretpassword"
+dbname: "currency"
+apikey: "heLJSwAL4RUBRYfPaxmTVXvmz4tp2t3YWip8mITQ"
+deadline: 1
+timeout: 2
+endpoint: http://localhost:8000/currencyApiTest
+# endpoint: https://api.currencyapi.com/v3/latest?apikey=heLJSwAL4RUBRYfPaxmTVXvmz4tp2t3YWip8mITQ
