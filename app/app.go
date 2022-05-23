@@ -33,7 +33,7 @@ func Run() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/currencies/{id:[a-z]{3}}", ch.Get).Methods(http.MethodGet)
-	router.HandleFunc("/currencyApiTest", ch.GetCurrencyAPISimulate).Methods(http.MethodGet)
+	// router.HandleFunc("/currencyApiTest", ch.GetCurrencyAPISimulate).Methods(http.MethodGet)
 	fmt.Println("listening on : 8000")
 	if err := http.ListenAndServe(":8000", router); err != nil {
 		fmt.Println(err.Error())

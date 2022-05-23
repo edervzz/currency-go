@@ -2,6 +2,7 @@ package app
 
 import (
 	"currency-go/service"
+	"currency-go/tech"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -18,6 +19,7 @@ func (h CurrencyHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	sdtfrom := r.URL.Query().Get("finit")
 	sdtto := r.URL.Query().Get("fend")
+	ctype := r.URL.Query().Get("ctype")
 
 	var dfrom, dto *time.Time
 
@@ -54,13 +56,29 @@ func (h CurrencyHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, appMess := h.service.Get(req)
+
+	var final interface{}
+
+	switch ctype {
+	case "normal":
+		normal := tech.MapperNormal{
+			Result: res,
+		}
+		final = normal.MapResponse()
+	case "extra":
+		extra := tech.MapperExtra{
+			Result: res,
+		}
+		final = extra.MapResponse()
+	}
+
 	if appMess != nil {
 		w.WriteHeader(appMess.Code)
 		json.NewEncoder(w).Encode(appMess.Message)
 		return
 	}
 
-	json.NewEncoder(w).Encode(res)
+	json.NewEncoder(w).Encode(final)
 }
 
 func (h CurrencyHandler) GetCurrencyAPISimulate(w http.ResponseWriter, r *http.Request) {

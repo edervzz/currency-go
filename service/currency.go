@@ -18,6 +18,14 @@ type CurrencyItem struct {
 	Value      float32 `json:"value"`
 }
 
+type CurrencyExtraResponse struct {
+	Items []CurrencyItemExtra `json:"items"`
+}
+type CurrencyItemExtra struct {
+	CurrencyId string  `json:"currencyId"`
+	Value      float32 `json:"value"`
+}
+
 type CurrencyService interface {
 	Get(req CurrencyRequest) (CurrencyResponse, *utils.AppMess)
 }
